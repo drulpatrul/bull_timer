@@ -59,6 +59,37 @@
       border: 1px solid var(--border);
     }
 
+    /* Карточка с параметрами упражнения — якорь для ссылки faq */
+    .card--params {
+      position: relative;
+    }
+
+    .faq-link {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 3px 8px;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-decoration: none;
+      color: #6b7280;
+      border: 1px solid #2c2c2c;
+      border-radius: 5px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .faq-link:hover {
+      color: var(--text-muted);
+      border-color: #454545;
+    }
+
+    .faq-link:active {
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
     .row {
       display: flex;
       gap: 10px;
@@ -371,7 +402,8 @@
   </div>
 
   <div class="container">
-    <div class="card reveal" style="--d: 60ms;">
+    <div class="card card--params reveal" style="--d: 60ms;">
+      <a class="faq-link" href="faq.html" title="Справка">FAQ</a>
       <div class="col" style="margin-bottom: 12px;">
         <label>Упражнение</label>
         <input type="text" id="exerciseName" value="Жим лежа" placeholder="Название..." list="exercisesList">

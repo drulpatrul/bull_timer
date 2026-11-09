@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Справка — Быку – Кнут</title>
+  <style>
+    :root {
+      --bg: #121212;
+      --card-bg: #1e1e1e;
+
+      /* Red-антагонист: два полюса — работа (зелёный) / отдых (красный). */
+      --accent: #2f8049;
+      --accent-strong: #276b3d;
+      --accent-text: #5cbe85;
+
+      --rest: #b3273f;
+      --rest-strong: #992036;
+      --rest-text: #e0695c;
+
+      --brand-red: #b3223a;
+
+      --text: #e2e4e8;
+      --text-muted: #9ca3af;
+      --border: #333;
+      --surface: #262626;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-bottom: 48px;
+    }
+
+    /* ===== Шапка ===== */
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 4px 0;
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .back:hover { background: var(--surface); color: var(--text); }
+    .back:active { background: #303030; }
+
+    .brand {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .brand em { font-style: normal; color: var(--brand-red); }
+
+    /* ===== Карточки-секции ===== */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    details { border-bottom: 1px solid var(--border); }
+    details:last-child { border-bottom: none; }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px 16px;
+      font-size: 17px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: background-color 0.15s;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary:hover { background: #232323; }
+
+    summary .chev {
+      flex: none;
+      width: 8px;
+      height: 8px;
+      border-right: 2px solid var(--text-muted);
+      border-bottom: 2px solid var(--text-muted);
+      transform: rotate(45deg);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      margin-right: 4px;
+    }
+
+    details[open] > summary .chev {
+      transform: rotate(-135deg);
+      border-color: var(--accent-text);
+    }
+
+    .content {
+      padding: 0 16px 20px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin: 20px 0 8px;
+      color: var(--text);
+    }
+
+    h3:first-of-type { margin-top: 0; }
+
+    p { margin-bottom: 10px; color: #cfd2d8; }
+    p:last-child { margin-bottom: 0; }
+
+    strong { color: var(--text); font-weight: 700; }
+    em { font-style: normal; color: var(--accent-text); }
+    em.warn { color: var(--rest-text); }
+
+    ul {
+      margin: 0 0 10px 0;
+      padding-left: 20px;
+    }
+
+    li { margin-bottom: 6px; color: #cfd2d8; }
+    li::marker { color: var(--accent-text); }
+
+    /* ===== Формула ===== */
+    .formula {
+      background: #171e19;
+      border: 1px solid #2c4a3a;
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin: 12px 0;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.7;
+      color: #d7e6dc;
+    }
+
+    .formula .res {
+      display: block;
+      margin-top: 8px;
+      color: var(--accent-text);
+      font-weight: 700;
+    }
+
+    /* ===== Таблица ===== */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 12px -16px;
+      padding: 0 16px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      min-width: 440px;
+      border-collapse: collapse;
+      font-size: 14px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      font-weight: 700;
+      background: #1a1a1a;
+      border-bottom: 1px solid #3a3a3a;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:nth-child(even) { background: #222; }
+
+    td:first-child { font-weight: 700; color: var(--accent-text); }
+    td:nth-child(3) { color: var(--text); font-weight: 700; }
+
+    .caption {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    /* ===== Бейджи-строка ===== */
+    .kv {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+
+    .kv span {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ===== Ссылка ===== */
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: #171e19;
+      border: 1px solid #2c4a3a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 8px;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .link-card:hover { border-color: var(--accent); background: #1a241d; }
+    .link-card:active { background: #1e2a21; }
+
+    .link-card .go {
+      color: var(--accent-text);
+      font-weight: 700;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .link-card .url {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    /* ===== Плашка заметки ===== */
+    .note {
+      background: #241a1c;
+      border: 1px solid #4a2630;
+      border-left: 3px solid var(--rest);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin: 12px 0;
+      font-size: 14px;
+      color: #efd6d2;
+    }
+
+    @media (max-width: 480px) {
+      summary { padding: 16px 14px; font-size: 16px; }
+      .content { padding: 0 14px 18px; }
+      .table-wrap { margin: 12px -14px; padding: 0 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="top">
+      <a class="back" href="index.html">← К тренировке</a>
+      <div class="brand">Быку <em>–</em> Кнут</div>
+    </div>
+
+    <div class="card">
+
+      <!-- ===== Расчет ПМ ===== -->
+      <details open>
+        <summary>Расчёт ПМ <span class="chev"></span></summary>
+        <div class="content">
+          <h3>Формула Эпли</h3>
+          <div class="formula">
+            Вес штанги (или гантели) + (Вес × Количество повторений × 0.0333)
+            <span class="res">= Твой 1ПМ</span>
+          </div>
+          <p>Оценка одноповторного максимума по подходу с субмаксимальным весом. Точность падает на большом числе повторений — формула надёжна примерно до 10 повторов в подходе.</p>
+        </div>
+      </details>
+
+      <!-- ===== Таблица ===== -->
+      <details>
+        <summary>Таблица интенсивности <span class="chev"></span></summary>
+        <div class="content">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Интенсивность</th>
+                  <th>Повторений в подходе</th>
+                  <th>Оптимум подъёмов</th>
+                  <th>Диапазон</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>55–65%</td><td>3–6</td><td>24</td><td>18–30</td></tr>
+                <tr><td>70–75%</td><td>3–6</td><td>18</td><td>12–24</td></tr>
+                <tr><td>80–85%</td><td>2–4</td><td>15</td><td>10–20</td></tr>
+                <tr><td>90%+</td><td>1–2</td><td>7</td><td>4–10</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Что означает каждый столбец</h3>
+          <ul>
+            <li><strong>Интенсивность</strong> — процент от максимума (1RM) в данном упражнении.</li>
+            <li><strong>Повторений в подходе</strong> — рекомендуемый диапазон числа повторений в одном подходе при данной интенсивности. При 80% вы не должны делать подходы по 8–10 повторений — это не соответствует весу.</li>
+            <li><strong>Оптимум подъёмов</strong> — идеальное суммарное число подъёмов штанги в одном упражнении за одну тренировку при данной интенсивности.</li>
+            <li><strong>Диапазон</strong> — допустимые границы. Ниже минимума — нагрузка недостаточна для адаптации. Выше максимума — начинается избыточное накопление усталости.</li>
+          </ul>
+
+          <h3>Пример прочтения</h3>
+          <p>Вы работаете на 72% от максимума. Оптимальное число подъёмов в этом упражнении за тренировку — <strong>18</strong>, допустимый диапазон <strong>12–24</strong>.</p>
+          <ul>
+            <li>6 подходов по 3 повторения = 18 подъёмов — <em>в оптимуме</em></li>
+            <li>4 подхода по 5 = 20 подъёмов — <em>тоже в диапазоне</em></li>
+            <li>8 подходов по 5 = 40 подъёмов — <em class="warn">за пределами верхней границы</em></li>
+          </ul>
+        </div>
+      </details>
+
+      <!-- ===== Питание ===== -->
+      <details>
+        <summary>Питание <span class="chev"></span></summary>
+        <div class="content">
+          <div class="note">
+            На дефиците критичнее провалить белок, на профиците — провалить углеводы.
+          </div>
+
+          <h3>Углеводы</h3>
+          <p><strong>Критический порог:</strong> ниже 100–120 г в сутки (мозг потребляет около 120–130 г глюкозы в сутки).</p>
+          <p>20% простых углеводов допустимо.</p>
+          <ul>
+            <li>3–4 г/кг — максимально сохранить силовые.</li>
+            <li>2–3 г/кг — умеренный дефицит, сохранить силовые.</li>
+            <li>Практический минимум 1.5–2 г/кг — до 10 рабочих подходов.</li>
+          </ul>
+          
+          <h3>Белок</h3>
+          <ul>
+            <li><strong>1.2 г/кг</strong> — предотвращает саркопению у нетренированных и пожилых людей.</li>
+            <li><strong>1.62 г/кг</strong> — максимальный КПД при наборе.</li>
+            <li><strong>2.1 г/кг</strong> — верхняя граница ДИ 0.95.</li>
+            <li>На сушке доказанный стандарт — <strong>1.6–2.4 г/кг</strong>.</li>
+          </ul>
+
+          <h3>Жиры</h3>
+          <p>Клинический нижний порог — <strong>0.5 г на 1 кг массы</strong> (или 15–20% суточного калоража), чтобы не уронить гормоны.</p>
+
+          <h3>Клетчатка</h3>
+          <p>Клинический минимум здоровья ЖКТ — <strong>25–30 г в сутки</strong>.</p>
+
+          
+          <h3>Дефицит</h3>
+          <div class="kv">
+            <span>500 ккал → 0.45 кг / вес = %</span>
+            <span>700 ккал → 0.64 кг / вес = %</span>
+          </div>
+          <p>Безопасный диапазон — <strong>0.5–0.7%</strong> от общей массы.</p>
+          <div class="note">
+            Выше 700 ккал/сут: падение уровня тестостерона, взлёт кортизола и статистически значимая потеря сухой массы.
+          </div>
+
+          <h3>Профицит</h3>
+          <ul>
+            <li>Минимум 3–4 г/кг, оптимально 4–5 г/кг.</li>
+            <li>7–10 г/кг — избыточно, не имеет смысла.</li>
+          </ul>
+          <p>Стандартом чистого набора (Lean Bulk) стал профицит <strong>не более 200–300 ккал/сут</strong>.</p>
+        </div>
+      </details>
+
+      <!-- ===== Программы ===== -->
+      <details>
+        <summary>Программы тренировок <span class="chev"></span></summary>
+        <div class="content">
+          <p>Готовые программы собраны отдельно — открыть можно по ссылке ниже.</p>
+          <a class="link-card" href="https://iron-mind.ru/programs" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div><strong>iron-mind.ru</strong></div>
+              <div class="url">/programs</div>
+            </div>
+            <span class="go">Открыть →</span>
+          </a>
+        </div>
+      </details>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
