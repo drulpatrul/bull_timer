@@ -65,30 +65,82 @@
       position: relative;
     }
 
-    .faq-link {
+    .top-links {
       position: absolute;
       top: 10px;
       right: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .faq-link, .settings-trigger {
       padding: 3px 8px;
       font-size: 10px;
-      line-height: 1;
+      line-height: 1.2;
       font-weight: 600;
       letter-spacing: 0.4px;
       text-decoration: none;
       color: #6b7280;
+      background: transparent;
       border: 1px solid #2c2c2c;
       border-radius: 5px;
       transition: color 0.15s ease, border-color 0.15s ease;
     }
 
-    .faq-link:hover {
+    .settings-trigger {
+      padding: 3px 6px;
+    }
+
+    .settings-trigger.configured {
+      color: var(--accent-text);
+      border-color: #2c4a3a;
+    }
+
+    .faq-link:hover, .settings-trigger:hover {
       color: var(--text-muted);
       border-color: #454545;
     }
 
-    .faq-link:active {
+    .faq-link:active, .settings-trigger:active {
       color: var(--accent-text);
       border-color: var(--accent);
+    }
+
+    /* Панель настроек Google Sheets */
+    .settings-panel {
+      display: none;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #2c2c2c;
+    }
+
+    .settings-panel.open {
+      display: block;
+    }
+
+    .settings-panel-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .settings-panel-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .settings-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .settings-row input {
+      padding: 8px 10px;
+      font-size: 13px;
     }
 
     .row {
@@ -203,11 +255,125 @@
       background: rgba(255,255,255,0.1);
     }
 
+    /* Строка поиска в истории */
+    .search-bar {
+      display: none;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .search-bar.open {
+      display: block;
+    }
+
+    .search-bar input {
+      padding: 8px 32px 8px 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      background: #252525;
+    }
+
+    .search-clear-btn {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 16px;
+      font-weight: 400;
+      border-radius: 4px;
+    }
+
+    .search-clear-btn:active {
+      transform: translateY(-50%) scale(0.95);
+      color: var(--text);
+    }
+
+    .btn-icon {
+      padding: 6px 8px;
+    }
+
+    .btn-icon.active {
+      background: #263d30;
+      color: var(--accent-text);
+    }
+
+    .btn-sync {
+      background: #263d30;
+      color: var(--accent-text);
+      border: 1px solid #2f5741;
+      gap: 5px;
+    }
+
+    .btn-sync.syncing svg {
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .sync-status {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: none;
+    }
+
+    .sync-status.visible {
+      display: block;
+    }
+
+    .sync-status.error {
+      color: var(--rest-text);
+    }
+
+    .sync-status.ok {
+      color: var(--accent-text);
+    }
+
+    .log-empty {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      padding: 14px 0;
+    }
+
     .log-list {
       display: flex;
       flex-direction: column;
       gap: 8px;
       margin-top: 8px;
+    }
+
+    /* Лаконичный разделитель дней в истории */
+    .log-day-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 6px 0 2px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+
+    .log-day-divider:first-child {
+      margin-top: 0;
+    }
+
+    .log-day-divider::before,
+    .log-day-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #2b2b2b;
     }
 
     .log-item-wrapper {
@@ -274,12 +440,13 @@
 
     .btn-group {
       display: flex;
-      gap: 6px;
+      gap: 5px;
+      flex-wrap: wrap;
     }
 
     .btn-small {
       width: auto;
-      padding: 6px 10px;
+      padding: 6px 9px;
       font-size: 12px;
       border-radius: 6px;
     }
@@ -432,7 +599,20 @@
 
   <div class="container">
     <div class="card card--params reveal" style="--d: 60ms;">
-      <a class="faq-link" href="faq.html" title="Справка">FAQ</a>
+      <div class="top-links">
+        <button type="button" id="btnSettingsToggle" class="settings-trigger" title="Настройка Google Sheets" aria-label="Настройки">⚙</button>
+        <a class="faq-link" href="faq.html" title="Справка">FAQ</a>
+      </div>
+
+      <div class="settings-panel" id="settingsPanel">
+        <div class="settings-panel-title">Синхронизация с Google Таблицей</div>
+        <div class="settings-panel-hint">Вставьте URL веб-приложения Google Apps Script. Таблица выступает единым источником правды.</div>
+        <div class="settings-row">
+          <input type="url" id="webhookUrlInput" placeholder="https://script.google.com/macros/s/...">
+          <button type="button" id="btnSaveWebhook" class="btn-primary btn-small">Сохранить</button>
+        </div>
+      </div>
+
       <div class="col" style="margin-bottom: 12px;">
         <label>Упражнение</label>
         <input type="text" id="exerciseName" value="" placeholder="Название..." list="exercisesList">
@@ -469,11 +649,32 @@
       <div class="actions-row">
         <label>История подходов</label>
         <div class="btn-group">
+          <button id="btnSearchToggle" class="btn-secondary btn-small btn-icon" title="Поиск по истории" aria-label="Поиск по истории">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"></circle>
+              <line x1="20" y1="20" x2="16.2" y2="16.2"></line>
+            </svg>
+          </button>
+          <button id="btnSync" class="btn-secondary btn-small btn-sync" title="Синхронизировать с Google Sheets">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Sheets</span>
+          </button>
           <input type="file" id="csvFileInput" accept=".csv,text/csv" style="display: none;">
-          <button id="btnImport" class="btn-secondary btn-small">Импорт CSV</button>
-          <button id="btnExport" class="btn-secondary btn-small">Экспорт CSV</button>
+          <button id="btnImport" class="btn-secondary btn-small">Импорт</button>
+          <button id="btnExport" class="btn-secondary btn-small">Экспорт</button>
           <button id="btnClear" class="btn-secondary btn-small" style="background: #4b2525;">Очистить</button>
         </div>
+      </div>
+
+      <div class="sync-status" id="syncStatus"></div>
+
+      <div class="search-bar" id="searchBar">
+        <input type="text" id="historySearchInput" placeholder="Фильтр по названию упражнения...">
+        <button type="button" id="btnSearchClear" class="search-clear-btn" title="Сбросить поиск">×</button>
       </div>
       <div class="log-list" id="logList"></div>
     </div>
@@ -510,6 +711,36 @@
       });
     }
 
+    // ===== Запрет блокировки экрана (Screen Wake Lock API) =====
+    let wakeLockSentinel = null;
+
+    async function requestWakeLock() {
+      if (!('wakeLock' in navigator)) return;
+      try {
+        if (!wakeLockSentinel) {
+          wakeLockSentinel = await navigator.wakeLock.request('screen');
+          wakeLockSentinel.addEventListener('release', () => {
+            wakeLockSentinel = null;
+          });
+        }
+      } catch (err) {}
+    }
+
+    async function releaseWakeLock() {
+      if (wakeLockSentinel) {
+        try {
+          await wakeLockSentinel.release();
+        } catch (err) {}
+        wakeLockSentinel = null;
+      }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && state !== 'idle') {
+        requestWakeLock();
+      }
+    });
+
     let state = 'idle';
     let timerInterval = null;
     let workSeconds = 0;
@@ -517,12 +748,25 @@
     let lockSeconds = 0;
     let targetRestTime = 90;
     let setsHistory = JSON.parse(localStorage.getItem('workout_sets_v2') || '[]');
+    let deletedIds = JSON.parse(localStorage.getItem('workout_deleted_ids') || '[]');
+    let webhookUrl = localStorage.getItem('workout_sheets_webhook') || '';
+    let searchQuery = '';
 
     const timerBox = document.getElementById('timerBox');
     const timerStatus = document.getElementById('timerStatus');
     const timerDigits = document.getElementById('timerDigits');
     const btnMain = document.getElementById('btnMain');
     const btnFinish = document.getElementById('btnFinish');
+    const btnSettingsToggle = document.getElementById('btnSettingsToggle');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const webhookUrlInput = document.getElementById('webhookUrlInput');
+    const btnSaveWebhook = document.getElementById('btnSaveWebhook');
+    const btnSync = document.getElementById('btnSync');
+    const syncStatus = document.getElementById('syncStatus');
+    const btnSearchToggle = document.getElementById('btnSearchToggle');
+    const searchBar = document.getElementById('searchBar');
+    const historySearchInput = document.getElementById('historySearchInput');
+    const btnSearchClear = document.getElementById('btnSearchClear');
     const btnImport = document.getElementById('btnImport');
     const csvFileInput = document.getElementById('csvFileInput');
     const btnExport = document.getElementById('btnExport');
@@ -533,6 +777,96 @@
     const weightInput = document.getElementById('weightInput');
     const repsInput = document.getElementById('repsInput');
     const targetRestInput = document.getElementById('targetRestInput');
+
+    // Инициализация настроек вебхука
+    webhookUrlInput.value = webhookUrl;
+    if (webhookUrl) {
+      btnSettingsToggle.classList.add('configured');
+    }
+
+    btnSettingsToggle.addEventListener('click', () => {
+      settingsPanel.classList.toggle('open');
+      if (settingsPanel.classList.contains('open')) {
+        webhookUrlInput.focus();
+      }
+    });
+
+    btnSaveWebhook.addEventListener('click', () => {
+      const val = webhookUrlInput.value.trim();
+      webhookUrl = val;
+      if (val) {
+        localStorage.setItem('workout_sheets_webhook', val);
+        btnSettingsToggle.classList.add('configured');
+      } else {
+        localStorage.removeItem('workout_sheets_webhook');
+        btnSettingsToggle.classList.remove('configured');
+      }
+      settingsPanel.classList.remove('open');
+      showSyncStatus(val ? 'Ссылка сохранена' : 'Ссылка удалена', 'ok');
+    });
+
+    function showSyncStatus(text, type = '') {
+      syncStatus.textContent = text;
+      syncStatus.className = 'sync-status visible' + (type ? ' ' + type : '');
+      clearTimeout(syncStatus._timer);
+      syncStatus._timer = setTimeout(() => {
+        syncStatus.classList.remove('visible');
+      }, 4500);
+    }
+
+    // Синхронизация с Google Sheets (единый источник правды)
+    async function syncWithGoogleSheets() {
+      if (!webhookUrl) {
+        settingsPanel.classList.add('open');
+        webhookUrlInput.focus();
+        showSyncStatus('Укажите URL скрипта Google Sheets в настройках (⚙)', 'error');
+        return;
+      }
+
+      if (btnSync.classList.contains('syncing')) return;
+      btnSync.classList.add('syncing');
+      btnSync.disabled = true;
+      showSyncStatus('Синхронизация с Google Таблицей...');
+
+      try {
+        const response = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify({
+            sets: setsHistory,
+            deletedIds: deletedIds
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.status !== 'ok' || !Array.isArray(data.sets)) {
+          throw new Error(data.message || 'Некорректный ответ сервера');
+        }
+
+        // Таблица — единый источник правды: обновляем локальный список данными из таблицы
+        setsHistory = data.sets;
+        deletedIds = [];
+        localStorage.removeItem('workout_deleted_ids');
+        saveState();
+        renderLogs();
+
+        const nowTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        showSyncStatus(`Синхронизировано в ${nowTime} · записей: ${setsHistory.length}`, 'ok');
+      } catch (err) {
+        showSyncStatus(`Ошибка синхронизации: ${err.message}`, 'error');
+      } finally {
+        btnSync.classList.remove('syncing');
+        btnSync.disabled = false;
+      }
+    }
+
+    btnSync.addEventListener('click', syncWithGoogleSheets);
 
     function formatTime(sec) {
       const m = Math.floor(sec / 60).toString().padStart(2, '0');
@@ -559,12 +893,66 @@
       }
     }
 
+    function formatDayLabel(dateObj) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      const target = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+
+      const dd = String(dateObj.getDate()).padStart(2, '0');
+      const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const yyyy = dateObj.getFullYear();
+      const baseDate = `${dd}.${mm}.${yyyy}`;
+
+      if (target.getTime() === today.getTime()) return `Сегодня · ${baseDate}`;
+      if (target.getTime() === yesterday.getTime()) return `Вчера · ${baseDate}`;
+      return baseDate;
+    }
+
     function renderLogs() {
       logList.innerHTML = '';
       updateExerciseAutocomplete();
 
-      setsHistory.slice().reverse().forEach((item, revIdx) => {
-        const realIndex = setsHistory.length - 1 - revIdx;
+      const query = searchQuery.trim().toLowerCase();
+      btnSearchToggle.classList.toggle('active', query.length > 0);
+
+      const entries = setsHistory
+        .map((item, idx) => ({ item, realIndex: idx }))
+        .reverse()
+        .filter(({ item }) => !query || String(item.exercise || '').toLowerCase().includes(query));
+
+      if (entries.length === 0 && query) {
+        const empty = document.createElement('div');
+        empty.className = 'log-empty';
+        empty.textContent = 'Ничего не найдено';
+        logList.appendChild(empty);
+        return;
+      }
+
+      let lastDayKey = null;
+
+      entries.forEach(({ item, realIndex }) => {
+        let displayTime = '';
+        let currentDayKey = 'unknown';
+        let dayLabel = 'Без даты';
+
+        if (item.timestamp) {
+          const d = new Date(item.timestamp);
+          if (!isNaN(d.getTime())) {
+            currentDayKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+            dayLabel = formatDayLabel(d);
+            displayTime = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          }
+        }
+
+        if (currentDayKey !== lastDayKey) {
+          const dayDivider = document.createElement('div');
+          dayDivider.className = 'log-day-divider';
+          dayDivider.textContent = dayLabel;
+          logList.appendChild(dayDivider);
+          lastDayKey = currentDayKey;
+        }
 
         const wrapper = document.createElement('div');
         wrapper.className = 'log-item-wrapper';
@@ -573,6 +961,11 @@
         deleteBtn.className = 'log-delete-btn';
         deleteBtn.textContent = 'Удалить';
         deleteBtn.addEventListener('click', () => {
+          const removed = setsHistory[realIndex];
+          if (removed && removed.timestamp) {
+            deletedIds.push(removed.timestamp);
+            localStorage.setItem('workout_deleted_ids', JSON.stringify(deletedIds));
+          }
           setsHistory.splice(realIndex, 1);
           saveState();
           renderLogs();
@@ -581,20 +974,10 @@
         const div = document.createElement('div');
         div.className = 'log-item';
 
-        let displayTime = '';
-        if (item.timestamp) {
-          const d = new Date(item.timestamp);
-          if (!isNaN(d.getTime())) {
-            const dateStr = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-            const timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            displayTime = `${dateStr} ${timeStr}`;
-          }
-        }
-
         div.innerHTML = `
           <div>
             <strong>${item.exercise}</strong>
-            <div class="log-meta">${item.weight} кг × ${item.reps} повт.${displayTime ? ' @ ' + displayTime : ''}</div>
+            <div class="log-meta">${item.weight} кг × ${item.reps} повт.${displayTime ? ' · ' + displayTime : ''}</div>
           </div>
           <div style="text-align: right;">
             <div>Сет: ${item.workTime}с</div>
@@ -661,6 +1044,29 @@
       });
     }
 
+    btnSearchToggle.addEventListener('click', () => {
+      const isOpen = searchBar.classList.toggle('open');
+      if (isOpen) {
+        historySearchInput.focus();
+      } else {
+        searchQuery = '';
+        historySearchInput.value = '';
+        renderLogs();
+      }
+    });
+
+    historySearchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderLogs();
+    });
+
+    btnSearchClear.addEventListener('click', () => {
+      searchQuery = '';
+      historySearchInput.value = '';
+      historySearchInput.focus();
+      renderLogs();
+    });
+
     function saveState() {
       localStorage.setItem('workout_sets_v2', JSON.stringify(setsHistory));
     }
@@ -669,6 +1075,7 @@
       state = 'idle';
       document.body.classList.remove('timer-active');
       saveTimerSession('idle');
+      releaseWakeLock();
       clearInterval(timerInterval);
       timerBox.className = 'timer-display state-idle';
       timerStatus.textContent = 'Готов к работе';
@@ -686,6 +1093,8 @@
         return;
       }
       initAudio();
+      requestWakeLock();
+
       if (!resumeStartTime && state === 'rest' && setsHistory.length > 0) {
         setsHistory[setsHistory.length - 1].restTime = restSeconds;
         saveState();
@@ -714,6 +1123,7 @@
 
     function startRest(resumeStartTime = null, savedTargetRest = null) {
       initAudio();
+      requestWakeLock();
 
       if (!resumeStartTime) {
         const currentSet = {
@@ -746,6 +1156,8 @@
       btnMain.textContent = 'Следующий подход';
       btnMain.className = 'btn-primary';
 
+      let alertPlayed = restSeconds > targetRestTime;
+
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         restSeconds = Math.floor((Date.now() - startTime) / 1000);
@@ -756,7 +1168,8 @@
           btnMain.disabled = false;
         }
 
-        if (restSeconds === targetRestTime) {
+        if (!alertPlayed && restSeconds >= targetRestTime) {
+          alertPlayed = true;
           playRestAlert();
         }
 
@@ -795,14 +1208,13 @@
     });
 
     btnClear.addEventListener('click', () => {
-      if (confirm('Вы уверены, что хотите полностью очистить историю подходов?')) {
+      if (confirm('Вы уверены, что хотите полностью очистить локальную историю подходов?')) {
         setsHistory = [];
         saveState();
         renderLogs();
       }
     });
 
-    // Разбор строки CSV с учетом кавычек и выбранного разделителя (, или ;)
     function parseCSVLine(line, delimiter = ',') {
       const result = [];
       let current = '';
@@ -833,13 +1245,11 @@
       return result;
     }
 
-    // Надежный парсинг даты из формата экспорта (YYYY-MM-DD HH:MM:SS) и форматов таблиц (DD.MM.YYYY HH:MM)
     function parseWorkoutDate(rawDateStr) {
       if (!rawDateStr) return null;
       const str = rawDateStr.replace(/^"|"$/g, '').trim();
       if (!str) return null;
 
-      // 1. Формат экспорта: YYYY-MM-DD HH:MM:SS (или с T)
       const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
       if (isoMatch) {
         const [, y, m, d, hh, mm, ss = '0'] = isoMatch;
@@ -847,7 +1257,6 @@
         if (!isNaN(dt.getTime())) return dt.toISOString();
       }
 
-      // 2. Формат после пересохранения в Excel/Sheets: DD.MM.YYYY HH:MM(:SS) или DD-MM-YYYY
       const ruMatch = str.match(/^(\d{2})[.-](\d{2})[.-](\d{4})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
       if (ruMatch) {
         const [, d, m, y, hh, mm, ss = '0'] = ruMatch;
@@ -878,18 +1287,14 @@
           return;
         }
 
-        // Определяем разделитель по первой строке (; или ,)
         const delimiter = (lines[0].indexOf(';') !== -1 && lines[0].indexOf(',') === -1) ? ';' : ',';
-
         const importedSets = [];
 
         for (let i = 0; i < lines.length; i++) {
           const cols = parseCSVLine(lines[i], delimiter);
 
-          // Пропускаем пустые строки из разделителей (например, ",,,,,")
           if (cols.every(c => c === '')) continue;
 
-          // Пропускаем строку заголовка (даже если она встретится не первой)
           const firstColClean = (cols[0] || '').replace(/^"|"$/g, '').trim();
           if (
             !firstColClean ||
@@ -899,8 +1304,6 @@
             continue;
           }
 
-          // Если в файле запятая как разделитель и дробный вес записан без кавычек через запятую (например, 42,5),
-          // то колонок станет 7 вместо 6 — склеиваем вес обратно
           let c = cols;
           if (delimiter === ',' && c.length === 7 && /^\d+$/.test(c[1]) && /^\d+$/.test(c[2])) {
             c = [c[0], `${c[1]}.${c[2]}`, c[3], c[4], c[5], c[6]];
@@ -908,7 +1311,6 @@
 
           if (c.length < 6) continue;
 
-          // Проверяем дату из 6-й колонки: если валидной даты нет — это не строка подхода, пропускаем ее
           const timestamp = parseWorkoutDate(c[5]);
           if (!timestamp) continue;
 
@@ -935,7 +1337,6 @@
           return;
         }
 
-        // Полная перезапись истории и синхронизация с localStorage
         setsHistory = importedSets;
         saveState();
         renderLogs();
