@@ -9,17 +9,15 @@
       --bg: #121212;
       --card-bg: #1e1e1e;
 
-      /* Red-антагонист: два полюса — работа (зелёный) / отдых (красный).
-         Оба приглушены, чтобы не давать «светофорного» свечения. */
-      --accent: #2f8049;          /* работа — заливка/акцент */
-      --accent-strong: #276b3d;   /* работа — нажатие */
-      --accent-text: #5cbe85;     /* работа — текст на тёмном */
+      --accent: #2f8049;
+      --accent-strong: #276b3d;
+      --accent-text: #5cbe85;
 
-      --rest: #b3273f;            /* отдых — заливка/акцент */
-      --rest-strong: #992036;     /* отдых — нажатие */
-      --rest-text: #e0695c;       /* отдых — текст на тёмном (AA) */
+      --rest: #b3273f;
+      --rest-strong: #992036;
+      --rest-text: #e0695c;
 
-      --brand-red: #b3223a;       /* бык, тире в подписи */
+      --brand-red: #b3223a;
 
       --text: #e2e4e8;
       --text-muted: #9ca3af;
@@ -43,7 +41,6 @@
       min-height: 100vh;
     }
 
-    /* Блокировка жеста pull-to-refresh на мобильных во время активного таймера */
     body.timer-active {
       overscroll-behavior-y: contain;
     }
@@ -64,7 +61,6 @@
       border: 1px solid var(--border);
     }
 
-    /* Карточка с параметрами упражнения — якорь для ссылки faq */
     .card--params {
       position: relative;
     }
@@ -159,7 +155,6 @@
     .state-rest .timer-status { color: var(--rest-text); }
     .state-rest .timer-time { color: var(--rest-text); }
 
-    /* Рамка таймера подкрашивается под фазу */
     .state-work.timer-display { border-color: #2c4a3a; }
     .state-rest.timer-display { border-color: #4a2630; }
 
@@ -189,7 +184,6 @@
 
     .btn-primary { background: var(--accent); color: #ffffff; width: 100%; }
     .btn-primary:active:not(:disabled) { background: var(--accent-strong); }
-    /* Отдых — та же механика, но красный полюс */
     .btn-rest { background: var(--rest); color: #ffffff; width: 100%; }
     .btn-rest:active:not(:disabled) { background: var(--rest-strong); }
     .btn-secondary { background: #374151; color: var(--text); }
@@ -216,7 +210,6 @@
       margin-top: 8px;
     }
 
-    /* Обертка для свайпа */
     .log-item-wrapper {
       position: relative;
       border-radius: 8px;
@@ -337,7 +330,6 @@
       100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.22)); }
     }
 
-    /* Подпись */
     .splash-name {
       margin-top: 16px;
       font-size: 15.5px;
@@ -356,7 +348,6 @@
       margin: 0 2px;
     }
 
-    /* Линия-«кнут»: растёт точно из центра под подписью */
     .splash-rule {
       position: relative;
       width: min(180px, 52vw);
@@ -368,7 +359,6 @@
       animation: ruleGrow 0.9s 0.45s cubic-bezier(0.65, 0, 0.35, 1) forwards;
     }
 
-    /* Импульс, идущий от центра к краям */
     .splash-rule::after {
       content: '';
       position: absolute;
@@ -398,7 +388,6 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ===== Появление контента после сплэша ===== */
     .container {
       transition: opacity 0.55s ease;
     }
@@ -558,7 +547,6 @@
         .join('');
     }
 
-    // Сохранение активной фазы таймера на случай принудительного обновления страницы
     function saveTimerSession(currentState, phaseStartTimestamp, targetRest) {
       if (currentState === 'idle') {
         localStorage.removeItem('workout_active_timer');
@@ -596,15 +584,17 @@
         let displayTime = '';
         if (item.timestamp) {
           const d = new Date(item.timestamp);
-          const dateStr = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-          const timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-          displayTime = `${dateStr} ${timeStr}`;
+          if (!isNaN(d.getTime())) {
+            const dateStr = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+            const timeStr = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            displayTime = `${dateStr} ${timeStr}`;
+          }
         }
 
         div.innerHTML = `
           <div>
             <strong>${item.exercise}</strong>
-            <div class="log-meta">${item.weight} кг × ${item.reps} повт. @ ${displayTime}</div>
+            <div class="log-meta">${item.weight} кг × ${item.reps} повт.${displayTime ? ' @ ' + displayTime : ''}</div>
           </div>
           <div style="text-align: right;">
             <div>Сет: ${item.workTime}с</div>
@@ -612,14 +602,12 @@
           </div>
         `;
 
-        // Логика свайпа справа налево
         let startX = 0;
         let startY = 0;
         let currentX = 0;
         let isDragging = false;
 
         div.addEventListener('touchstart', (e) => {
-          // Закрываем другие открытые плашки
           document.querySelectorAll('.log-item.swiped').forEach(el => {
             if (el !== div) el.classList.remove('swiped');
           });
@@ -635,7 +623,6 @@
           const dx = e.touches[0].clientX - startX;
           const dy = e.touches[0].clientY - startY;
 
-          // Если пользователь скроллит вертикально — отменяем свайп
           if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 10) {
             isDragging = false;
             div.style.transition = '';
@@ -662,7 +649,6 @@
           }
         });
 
-        // Тап по открытой карточке закрывает ее
         div.addEventListener('click', () => {
           if (div.classList.contains('swiped')) {
             div.classList.remove('swiped');
@@ -750,7 +736,7 @@
       saveTimerSession('rest', startTime, targetRestTime);
 
       restSeconds = Math.floor((Date.now() - startTime) / 1000);
-      lockSeconds = Math.max(0, 10 - restSeconds); // Пауза блокировки сокращена до 10 секунд
+      lockSeconds = Math.max(0, 10 - restSeconds);
 
       timerBox.className = 'timer-display state-rest';
       timerStatus.textContent = 'Отдых';
@@ -780,7 +766,6 @@
       }, 1000);
     }
 
-    // Блокировка случайной перезагрузки страницы на уровне браузера
     window.addEventListener('beforeunload', (e) => {
       if (state !== 'idle') {
         e.preventDefault();
@@ -817,8 +802,8 @@
       }
     });
 
-    // Парсер одной строки CSV с поддержкой кавычек
-    function parseCSVLine(line) {
+    // Разбор строки CSV с учетом кавычек и выбранного разделителя (, или ;)
+    function parseCSVLine(line, delimiter = ',') {
       const result = [];
       let current = '';
       let inQuotes = false;
@@ -836,16 +821,42 @@
         } else {
           if (ch === '"') {
             inQuotes = true;
-          } else if (ch === ',') {
-            result.push(current);
+          } else if (ch === delimiter) {
+            result.push(current.trim());
             current = '';
           } else {
             current += ch;
           }
         }
       }
-      result.push(current);
+      result.push(current.trim());
       return result;
+    }
+
+    // Надежный парсинг даты из формата экспорта (YYYY-MM-DD HH:MM:SS) и форматов таблиц (DD.MM.YYYY HH:MM)
+    function parseWorkoutDate(rawDateStr) {
+      if (!rawDateStr) return null;
+      const str = rawDateStr.replace(/^"|"$/g, '').trim();
+      if (!str) return null;
+
+      // 1. Формат экспорта: YYYY-MM-DD HH:MM:SS (или с T)
+      const isoMatch = str.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?/);
+      if (isoMatch) {
+        const [, y, m, d, hh, mm, ss = '0'] = isoMatch;
+        const dt = new Date(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss));
+        if (!isNaN(dt.getTime())) return dt.toISOString();
+      }
+
+      // 2. Формат после пересохранения в Excel/Sheets: DD.MM.YYYY HH:MM(:SS) или DD-MM-YYYY
+      const ruMatch = str.match(/^(\d{2})[.-](\d{2})[.-](\d{4})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+      if (ruMatch) {
+        const [, d, m, y, hh, mm, ss = '0'] = ruMatch;
+        const dt = new Date(Number(y), Number(m) - 1, Number(d), Number(hh), Number(mm), Number(ss));
+        if (!isNaN(dt.getTime())) return dt.toISOString();
+      }
+
+      const fallback = new Date(str);
+      return !isNaN(fallback.getTime()) ? fallback.toISOString() : null;
     }
 
     btnImport.addEventListener('click', () => {
@@ -862,32 +873,55 @@
         const text = event.target.result.replace(/^\uFEFF/, '');
         const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
 
-        if (lines.length <= 1) {
-          alert('Файл пуст или не содержит записей.');
+        if (lines.length === 0) {
+          alert('Файл пуст.');
           return;
         }
 
+        // Определяем разделитель по первой строке (; или ,)
+        const delimiter = (lines[0].indexOf(';') !== -1 && lines[0].indexOf(',') === -1) ? ';' : ',';
+
         const importedSets = [];
-        for (let i = 1; i < lines.length; i++) {
-          const cols = parseCSVLine(lines[i]);
-          if (cols.length < 4) continue;
 
-          const exercise = (cols[0] || '').trim() || 'Без названия';
-          const weight = parseFloat(cols[1]) || 0;
-          const reps = parseInt(cols[2], 10) || 0;
-          const workTime = parseInt(cols[3], 10) || 0;
-          const restTime = cols[4] !== undefined && cols[4].trim() !== '' ? parseInt(cols[4], 10) : null;
+        for (let i = 0; i < lines.length; i++) {
+          const cols = parseCSVLine(lines[i], delimiter);
 
-          let timestamp = new Date().toISOString();
-          if (cols[5] && cols[5].trim()) {
-            const parsedDate = new Date(cols[5].trim().replace(' ', 'T'));
-            if (!isNaN(parsedDate.getTime())) {
-              timestamp = parsedDate.toISOString();
-            }
+          // Пропускаем пустые строки из разделителей (например, ",,,,,")
+          if (cols.every(c => c === '')) continue;
+
+          // Пропускаем строку заголовка (даже если она встретится не первой)
+          const firstColClean = (cols[0] || '').replace(/^"|"$/g, '').trim();
+          if (
+            !firstColClean ||
+            firstColClean.toLowerCase() === 'упражнение' ||
+            firstColClean.toLowerCase() === 'exercise'
+          ) {
+            continue;
           }
 
+          // Если в файле запятая как разделитель и дробный вес записан без кавычек через запятую (например, 42,5),
+          // то колонок станет 7 вместо 6 — склеиваем вес обратно
+          let c = cols;
+          if (delimiter === ',' && c.length === 7 && /^\d+$/.test(c[1]) && /^\d+$/.test(c[2])) {
+            c = [c[0], `${c[1]}.${c[2]}`, c[3], c[4], c[5], c[6]];
+          }
+
+          if (c.length < 6) continue;
+
+          // Проверяем дату из 6-й колонки: если валидной даты нет — это не строка подхода, пропускаем ее
+          const timestamp = parseWorkoutDate(c[5]);
+          if (!timestamp) continue;
+
+          const weight = parseFloat(String(c[1]).replace(',', '.'));
+          const reps = parseInt(c[2], 10);
+          const workTime = parseInt(c[3], 10);
+          const restRaw = c[4] !== undefined ? String(c[4]).trim() : '';
+          const restTime = restRaw !== '' && !isNaN(parseInt(restRaw, 10)) ? parseInt(restRaw, 10) : null;
+
+          if (isNaN(weight) || isNaN(reps) || isNaN(workTime)) continue;
+
           importedSets.push({
-            exercise,
+            exercise: firstColClean,
             weight,
             reps,
             workTime,
@@ -897,11 +931,11 @@
         }
 
         if (importedSets.length === 0) {
-          alert('Не удалось распознать подходы в CSV.');
+          alert('Не удалось распознать подходы в CSV. Проверьте формат файла.');
           return;
         }
 
-        // Полная замена массива истории на импортированный
+        // Полная перезапись истории и синхронизация с localStorage
         setsHistory = importedSets;
         saveState();
         renderLogs();
@@ -941,7 +975,6 @@
 
     renderLogs();
 
-    // Восстановление активного таймера, если страница все же была перезагружена
     (function restoreActiveTimer() {
       const savedSession = JSON.parse(localStorage.getItem('workout_active_timer') || 'null');
       if (!savedSession || !savedSession.startTime) return;
@@ -959,7 +992,6 @@
       }
     })();
 
-    // ===== Загрузочная анимация =====
     (function initSplash() {
       const splash = document.getElementById('splash');
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
